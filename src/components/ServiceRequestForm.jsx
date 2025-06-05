@@ -11,6 +11,7 @@ import {
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import axios from 'axios';
 
 const ServiceRequestForm = () => {
   const [formData, setFormData] = useState({
@@ -47,17 +48,9 @@ const ServiceRequestForm = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch('http://localhost:5000/api/service-requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.post('/api/service-requests', formData);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setSuccess(true);
         setFormData({
           name: '',
@@ -69,7 +62,7 @@ const ServiceRequestForm = () => {
           message: '',
         });
       } else {
-        setError(data.message || 'Something went wrong');
+        setError(response.data.message || 'Something went wrong');
       }
     } catch (error) {
       setError('Failed to submit form. Please try again.');

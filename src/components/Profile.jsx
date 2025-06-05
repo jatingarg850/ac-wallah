@@ -25,7 +25,7 @@ const Profile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${user.id}`, {
+      const response = await axios.get(`/api/users/${user.id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -45,7 +45,7 @@ const Profile = () => {
 
   const fetchUserListings = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/ac-listings/user/${user.id}`, {
+      const response = await axios.get(`/api/ac-listings/user/${user.id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -61,7 +61,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/api/users/${user.id}`, 
+        `/api/users/${user.id}`, 
         editedProfile,
         {
           headers: {

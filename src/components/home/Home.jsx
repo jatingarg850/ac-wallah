@@ -18,7 +18,7 @@ const Main = () => {
 
     const fetchOldAcListings = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/ac-listings');
+            const response = await axios.get('/api/ac-listings');
             setOldAcListings(response.data);
         } catch (error) {
             console.error('Error fetching old AC listings:', error);

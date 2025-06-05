@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 import {
   Container,
   Box,
@@ -50,14 +51,13 @@ const AdminPanel = () => {
     // Fetch admin dashboard data
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/dashboard', {
+        const response = await axios.get('/api/admin/dashboard', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        const data = await response.json();
-        if (response.ok) {
-          setStats(data);
+        if (response.status === 200) {
+          setStats(response.data);
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -67,14 +67,13 @@ const AdminPanel = () => {
     // Fetch service requests
     const fetchServiceRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/service-requests', {
+        const response = await axios.get('/api/admin/service-requests', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        const data = await response.json();
-        if (response.ok) {
-          setServiceRequests(data);
+        if (response.status === 200) {
+          setServiceRequests(response.data);
         } else {
           setError('Failed to fetch service requests');
         }
@@ -87,14 +86,13 @@ const AdminPanel = () => {
     // Fetch buyer inquiries
     const fetchBuyerInquiries = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/buyer-inquiries', {
+        const response = await axios.get('/api/admin/buyer-inquiries', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        const data = await response.json();
-        if (response.ok) {
-          setBuyerInquiries(data);
+        if (response.status === 200) {
+          setBuyerInquiries(response.data);
         } else {
           setError('Failed to fetch buyer inquiries');
         }
@@ -111,16 +109,17 @@ const AdminPanel = () => {
 
   const handleStatusChange = async (requestId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/service-requests/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const response = await axios.patch(
+        `/api/admin/service-requests/${requestId}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-      if (response.ok) {
+      if (response.status === 200) {
         setServiceRequests(serviceRequests.map(request => 
           request.id === requestId ? { ...request, status: newStatus } : request
         ));
@@ -137,16 +136,17 @@ const AdminPanel = () => {
 
   const updateServiceRequestStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/service-requests/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ status })
-      });
+      const response = await axios.patch(
+        `/api/admin/service-requests/${id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-      if (response.ok) {
+      if (response.status === 200) {
         fetchServiceRequests();
       } else {
         setError('Failed to update status');
@@ -159,16 +159,17 @@ const AdminPanel = () => {
 
   const updateBuyerInquiryStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/buyer-inquiries/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ status })
-      });
+      const response = await axios.patch(
+        `/api/admin/buyer-inquiries/${id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-      if (response.ok) {
+      if (response.status === 200) {
         fetchBuyerInquiries();
       } else {
         setError('Failed to update status');

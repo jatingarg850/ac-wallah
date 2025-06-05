@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../commonComponents/button';
+import axios from 'axios';
 
 const FormCard = () => {
     const [formData, setFormData] = useState({
@@ -23,34 +24,17 @@ const FormCard = () => {
         setSuccess(false);
 
         try {
-            const response = await fetch('http://localhost:5000/api/service-requests', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Origin': window.location.origin,
-                    'Cache-Control': 'no-cache',
-                },
-                credentials: 'include',
-                mode: 'cors',
-                body: JSON.stringify({
-                    name: formData.fullName,
-                    email: formData.email,
-                    phone: formData.phone,
-                    service_type: formData.service,
-                    address: formData.address,
-                    preferred_date: new Date().toISOString(),
-                    message: '',
-                }),
+            const response = await axios.post('/api/service-requests', {
+                name: formData.fullName,
+                email: formData.email,
+                phone: formData.phone,
+                service_type: formData.service,
+                address: formData.address,
+                preferred_date: new Date().toISOString(),
+                message: '',
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) {
                 setSuccess(true);
                 // Clear form
                 setFormData({
@@ -61,11 +45,11 @@ const FormCard = () => {
                     service: '',
                 });
             } else {
-                setError(data.message || 'Failed to submit service request');
+                setError('Failed to submit form. Please try again.');
             }
         } catch (error) {
-            console.error('Submit error:', error);
-            setError('Failed to submit request. Please try again later.');
+            setError('Failed to submit form. Please try again.');
+            console.error('Form submission error:', error);
         }
     };
 
